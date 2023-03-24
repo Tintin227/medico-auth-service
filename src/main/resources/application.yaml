@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    active: dev
+
+service-name: MEDICO AUTH SERVICE
+service-version: v1.0
