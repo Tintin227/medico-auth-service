@@ -60,7 +60,7 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: '${EUREKA_URI:http://192.168.68.69:9761/eureka/}'
+      defaultZone: '${EUREKA_URI:http://172.26.0.1:8761/eureka/}'
 logging:
    level:
       org.hibernate.*: ERROR
@@ -70,16 +70,16 @@ keycloak:
    resource: webapp
 # keycloak configuration
    bearer-only: true
-   auth-server-url: http://192.168.68.69:8998/auth
+   auth-server-url: http://172.26.0.1:8089/auth
    credentials:
-      secret: fwUsLh4Ca49Zsq5Qdwi7HgN7ZhlF1GZD
+      secret: LKmYuybikdBHbflOmiy9nxZ9oIKbKss5
 oauth:
    client-id: webapp
-   client-secret: fwUsLh4Ca49Zsq5Qdwi7HgN7ZhlF1GZD
+   client-secret: LKmYuybikdBHbflOmiy9nxZ9oIKbKss5
    scope: openid microprofile-jwt
-   token-url: http://192.168.68.69:8998/auth/realms/UNI_MEDICO/protocol/openid-connect/token
-   user-info-url: http://192.168.68.69:8998/auth/realms/UNI_MEDICO/protocol/openid-connect/userinfo
-   user-logout-url: http://192.168.68.69:8998/auth/realms/UNI_MEDICO/protocol/openid-connect/logout
+   token-url: http://172.26.0.1:8089/auth/realms/UNI_MEDICO/protocol/openid-connect/token
+   user-info-url: http://172.26.0.1:8089/auth/realms/UNI_MEDICO/protocol/openid-connect/userinfo
+   user-logout-url: http://172.26.0.1:8089/auth/realms/UNI_MEDICO/protocol/openid-connect/logout
 whitelist:
    patterns: /**
    ip-address: 192.168.68.0/24
