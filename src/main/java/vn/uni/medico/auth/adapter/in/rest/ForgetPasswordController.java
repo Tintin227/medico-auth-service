@@ -21,6 +21,7 @@ public class ForgetPasswordController {
 
     private final OtpUseCase useCase;
 
+    //Test
     @PostMapping(value = "/otp")
     public ResponseEntity sendOtp(@RequestBody OtpRequestDto dto) {
         useCase.senOtpViaMailOrPhone(dto);
