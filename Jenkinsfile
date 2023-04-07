@@ -1,54 +1,40 @@
+
 pipeline {
-
-  agent none
-
-  environment {
-    DOCKER_IMAGE = "nhtua/flask-docker"
-  }
-
-  stages {
-    stage("Test") {
-      agent {
-          docker {
-            image 'python:3.8-slim-buster'
-            args '-u 0:0 -v /tmp:/root/.cache'
-          }
-      }
-      steps {
-        sh "pip install poetry"
-        sh "poetry install"
-        sh "poetry run pytest"
-      }
+    agent any
+    tools{
+        maven 'maven_3_5_0'
     }
+    stages{
+        stage('Build Maven'){
+            steps{
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Java-Techie-jt/devops-automation']]])
+                sh 'mvn clean install'
+            }
+        }
+        stage('Build docker image'){
+            steps{
+                script{
+                    sh 'docker build -t javatechie/devops-integration .'
+                }
+            }
+        }
+        stage('Push image to Hub'){
+            steps{
+                script{
+                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
+                   sh 'docker login -u javatechie -p ${dockerhubpwd}'
 
-//     stage("build") {
-//       agent { node {label 'master'}}
-//       environment {
-//         DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
-//       }
-//       steps {
-//         sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} . "
-//         sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
-//         sh "docker image ls | grep ${DOCKER_IMAGE}"
-//         withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-//             sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
-//             sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
-//             sh "docker push ${DOCKER_IMAGE}:latest"
+}
+                   sh 'docker push javatechie/devops-integration'
+                }
+            }
+        }
+//         stage('Deploy to k8s'){
+//             steps{
+//                 script{
+//                     kubernetesDeploy (configs: 'deploymentservice.yaml',kubeconfigId: 'k8sconfigpwd')
+//                 }
+//             }
 //         }
-//
-//         //clean to save disk
-//         sh "docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
-//         sh "docker image rm ${DOCKER_IMAGE}:latest"
-//       }
-//     }
-//   }
-
-  post {
-    success {
-      echo "SUCCESSFUL"
     }
-    failure {
-      echo "FAILED"
-    }
-  }
 }
